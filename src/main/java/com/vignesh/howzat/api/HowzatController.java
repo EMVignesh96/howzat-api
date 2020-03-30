@@ -22,6 +22,6 @@ public class HowzatController {
     @GetMapping(path = "hello")
     public Handshake sayHello() {
         long timeInMillis = Calendar.getInstance().getTimeInMillis();
-        return new Handshake(timeInMillis, "connection established");
+        return accountService.sayHello(timeInMillis, "connection established");
     }
 }

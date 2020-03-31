@@ -2,6 +2,7 @@ package com.vignesh.howzat.service;
 
 import com.vignesh.howzat.dao.AccountDao;
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.UserKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -17,5 +18,9 @@ public class AccountService {
 
     public Handshake sayHello(long timeInMillis, String message) {
         return accountDao.sayHello(timeInMillis, message);
+    }
+
+    public UserKeys generateUserKeys(int noOfTeams) {
+        return accountDao.generateUserKeys(noOfTeams);
     }
 }

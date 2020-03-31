@@ -1,10 +1,12 @@
 package com.vignesh.howzat.api;
 
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.UserKeys;
 import com.vignesh.howzat.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
@@ -23,5 +25,10 @@ public class HowzatController {
     public Handshake sayHello() {
         long timeInMillis = Calendar.getInstance().getTimeInMillis();
         return accountService.sayHello(timeInMillis, "connection established");
+    }
+
+    @GetMapping(path = "generate-user-keys")
+    public UserKeys generateUserKeys(@RequestParam("no_of_teams") int noOfTeams) {
+        return accountService.generateUserKeys(noOfTeams);
     }
 }

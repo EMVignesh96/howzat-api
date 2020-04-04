@@ -1,6 +1,7 @@
 package com.vignesh.howzat.api;
 
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import com.vignesh.howzat.service.AccountService;
@@ -34,5 +35,10 @@ public class HowzatController {
     public SignUpInfo signUp(@PathVariable("username") String userName, @RequestParam("password") String password,
                              @RequestParam("user_key") String userKey) {
         return accountService.signUp(userName, password, userKey);
+    }
+
+    @PostMapping(path = "signin/{username}")
+    public SignInInfo signIn(@PathVariable("username") String userName, @RequestParam("password") String password) {
+        return accountService.signIn(userName, password);
     }
 }

@@ -1,5 +1,6 @@
 package com.vignesh.howzat.exception.signup;
 
+import com.vignesh.howzat.exception.ExceptionEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,38 +20,38 @@ public class UserKeyExceptionHandler {
     public ResponseEntity<Object> handleDuplicateUserKeyException(DuplicateUserKeyException exception, WebRequest request) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-        UserKeyException userKeyException = new UserKeyException(
+        ExceptionEntity exceptionEntity = new ExceptionEntity(
                 exception.getMessage(),
                 badRequest,
                 ZonedDateTime.now(ZoneId.of("Z")),
                 ERR_CODE_DUPLICATE_USER_KEY
         );
-        return new ResponseEntity<>(userKeyException, badRequest);
+        return new ResponseEntity<>(exceptionEntity, badRequest);
     }
 
     @ExceptionHandler(value = {UserKeyNotFoundException.class})
     public ResponseEntity<Object> handleUserKeyNotFoundException(UserKeyNotFoundException exception, WebRequest request) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-        UserKeyException userKeyException = new UserKeyException(
+        ExceptionEntity exceptionEntity = new ExceptionEntity(
                 exception.getMessage(),
                 badRequest,
                 ZonedDateTime.now(ZoneId.of("Z")),
                 ERR_CODE_USER_KEY_NOT_FOUND
         );
-        return new ResponseEntity<>(userKeyException, badRequest);
+        return new ResponseEntity<>(exceptionEntity, badRequest);
     }
 
     @ExceptionHandler(value = {UserNameAlreadyExistException.class})
     public ResponseEntity<Object> handleUserNameAlreadyExistException(UserNameAlreadyExistException exception, WebRequest request) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-        UserKeyException userKeyException = new UserKeyException(
+        ExceptionEntity exceptionEntity = new ExceptionEntity(
                 exception.getMessage(),
                 badRequest,
                 ZonedDateTime.now(ZoneId.of("Z")),
                 ERR_CODE_USER_NAME_EXISTS
         );
-        return new ResponseEntity<>(userKeyException, badRequest);
+        return new ResponseEntity<>(exceptionEntity, badRequest);
     }
 }

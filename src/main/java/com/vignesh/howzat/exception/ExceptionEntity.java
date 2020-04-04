@@ -1,16 +1,16 @@
-package com.vignesh.howzat.exception.signup;
+package com.vignesh.howzat.exception;
 
 import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
 
-public class UserKeyException {
+public class ExceptionEntity {
     private final String message;
     private final HttpStatus httpStatus;
     private final ZonedDateTime timestamp;
     private final int errorCode;
 
-    public UserKeyException(String message, HttpStatus httpStatus, ZonedDateTime timestamp, int errorCode) {
+    public ExceptionEntity(String message, HttpStatus httpStatus, ZonedDateTime timestamp, int errorCode) {
         this.message = message;
         this.httpStatus = httpStatus;
         this.timestamp = timestamp;

@@ -1,9 +1,12 @@
 package com.vignesh.howzat.dao;
 
+import com.vignesh.howzat.exception.signin.PasswordMismatchException;
+import com.vignesh.howzat.exception.signin.UserNameNotFoundException;
 import com.vignesh.howzat.exception.signup.DuplicateUserKeyException;
 import com.vignesh.howzat.exception.signup.UserKeyNotFoundException;
 import com.vignesh.howzat.exception.signup.UserNameAlreadyExistException;
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +67,17 @@ public class AccountDataAccessService implements AccountDao {
         } catch (DuplicateKeyException e) {
             throw new UserNameAlreadyExistException("User name already exist");
         }
+    }
+
+    @Override
+    public SignInInfo signIn(String userName, String password) {
+        String sql = "SELECT * FROM " + TAB_ACCOUNT + " WHERE " + COL_USER_NAME + " = ?";
+        List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, userName);
+        if (resultList.size() == 0) throw new UserNameNotFoundException("User name does not exist");
+        String passwordHash = resultList.get(0).getOrDefault(COL_PASSWORD_HASH, "").toString().trim();
+        String hashedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
+        if (!passwordHash.contentEquals(hashedPassword)) throw new PasswordMismatchException("Incorrect password");
+        return new SignInInfo(userName, "Logged in successfully");
     }
 
     private boolean isUserKeyDuplicate(String userKey) {

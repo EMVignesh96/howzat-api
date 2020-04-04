@@ -1,13 +1,11 @@
 package com.vignesh.howzat.api;
 
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import com.vignesh.howzat.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
 
@@ -30,5 +28,11 @@ public class HowzatController {
     @GetMapping(path = "generate-user-keys")
     public UserKeys generateUserKeys(@RequestParam("no_of_teams") int noOfTeams) {
         return accountService.generateUserKeys(noOfTeams);
+    }
+
+    @PostMapping(path = "signup/{username}")
+    public SignUpInfo signUp(@PathVariable("username") String userName, @RequestParam("password") String password,
+                             @RequestParam("user_key") String userKey) {
+        return accountService.signUp(userName, password, userKey);
     }
 }

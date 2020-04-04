@@ -2,6 +2,7 @@ package com.vignesh.howzat.service;
 
 import com.vignesh.howzat.dao.AccountDao;
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,5 +23,9 @@ public class AccountService {
 
     public UserKeys generateUserKeys(int noOfTeams) {
         return accountDao.generateUserKeys(noOfTeams);
+    }
+
+    public SignUpInfo signUp(String userName, String password, String userKey) {
+        return accountDao.signUp(userName, password, userKey);
     }
 }

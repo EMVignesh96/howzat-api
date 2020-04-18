@@ -31,8 +31,9 @@ public class HowzatController {
         return accountService.generateUserKeys(noOfTeams);
     }
 
-    @PostMapping(path = "signup/{username}")
-    public SignUpInfo signUp(@PathVariable("username") String userName, @RequestParam("password") String password,
+    @PostMapping(path = "signUp")
+    public SignUpInfo signUp(@RequestParam("username") String userName,
+                             @RequestParam("password") String password,
                              @RequestParam("user_key") String userKey) {
         return accountService.signUp(userName, password, userKey);
     }

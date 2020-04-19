@@ -1,0 +1,25 @@
+package com.vignesh.howzat.jwt;
+
+public class UserNamePasswordAuthRequest {
+    String userName;
+    String password;
+
+    public UserNamePasswordAuthRequest() {
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}

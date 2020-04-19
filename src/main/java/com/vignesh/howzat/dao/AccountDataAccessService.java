@@ -9,6 +9,7 @@ import com.vignesh.howzat.model.Handshake;
 import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
+import com.vignesh.howzat.security.PasswordConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,11 +27,14 @@ public class AccountDataAccessService implements AccountDao {
     private static final String COL_USER_KEY = "user_key";
     private static final String COL_USER_NAME = "username";
     private static final String COL_PASSWORD_HASH = "password_hash";
+
     private final JdbcTemplate jdbcTemplate;
+    private final PasswordConfig passwordConfig;
 
     @Autowired
-    public AccountDataAccessService(JdbcTemplate jdbcTemplate) {
+    public AccountDataAccessService(JdbcTemplate jdbcTemplate, PasswordConfig passwordConfig) {
         this.jdbcTemplate = jdbcTemplate;
+        this.passwordConfig = passwordConfig;
     }
 
     @Override
@@ -61,7 +65,7 @@ public class AccountDataAccessService implements AccountDao {
 
         try {
             String sql = "UPDATE " + TAB_ACCOUNT + " SET " + COL_USER_NAME + " = ?, " + COL_PASSWORD_HASH + " = ? WHERE " + COL_USER_KEY + " = ?";
-            String passwordHash = DigestUtils.md5DigestAsHex(password.getBytes());
+            String passwordHash = passwordConfig.passwordEncoder().encode(password);
             jdbcTemplate.update(sql, userName, passwordHash, userKey);
             return new SignUpInfo(userName, "Account created");
         } catch (DuplicateKeyException e) {

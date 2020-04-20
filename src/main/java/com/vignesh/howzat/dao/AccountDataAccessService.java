@@ -1,5 +1,6 @@
 package com.vignesh.howzat.dao;
 
+import com.vignesh.howzat.auth.AppUser;
 import com.vignesh.howzat.exception.signin.PasswordMismatchException;
 import com.vignesh.howzat.exception.signin.UserNameNotFoundException;
 import com.vignesh.howzat.exception.signup.DuplicateUserKeyException;
@@ -9,7 +10,6 @@ import com.vignesh.howzat.model.Handshake;
 import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
-import com.vignesh.howzat.security.PasswordConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,15 +26,18 @@ public class AccountDataAccessService implements AccountDao {
     private static final String TAB_ACCOUNT = "account";
     private static final String COL_USER_KEY = "user_key";
     private static final String COL_USER_NAME = "username";
-    private static final String COL_PASSWORD_HASH = "password_hash";
+    private static final String COL_PASSWORD = "password";
+    private static final String COL_GRANTED_AUTHORITIES = "granted_authorities";
+    private static final String COL_IS_ACCOUNT_NON_EXPIRED = "is_account_non_expired";
+    private static final String COL_IS_ACCOUNT_NON_LOCKED = "is_account_non_locked";
+    private static final String COL_IS_CREDENTIALS_NON_EXPIRED = "is_credentials_non_expired";
+    private static final String COL_IS_ENABLED = "is_enabled";
 
     private final JdbcTemplate jdbcTemplate;
-    private final PasswordConfig passwordConfig;
 
     @Autowired
-    public AccountDataAccessService(JdbcTemplate jdbcTemplate, PasswordConfig passwordConfig) {
+    public AccountDataAccessService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.passwordConfig = passwordConfig;
     }
 
     @Override
@@ -59,26 +62,41 @@ public class AccountDataAccessService implements AccountDao {
     }
 
     @Override
-    public SignUpInfo signUp(String userName, String password, String userKey) {
+    public SignUpInfo signUpUser(AppUser buyer, String userKey) {
         if (isUserKeyNotFound(userKey)) throw new UserKeyNotFoundException("User Key Not Found");
         if (isUserKeyDuplicate(userKey)) throw new DuplicateUserKeyException("User Key already registered");
 
         try {
-            String sql = "UPDATE " + TAB_ACCOUNT + " SET " + COL_USER_NAME + " = ?, " + COL_PASSWORD_HASH + " = ? WHERE " + COL_USER_KEY + " = ?";
-            String passwordHash = passwordConfig.passwordEncoder().encode(password);
-            jdbcTemplate.update(sql, userName, passwordHash, userKey);
-            return new SignUpInfo(userName, "Account created");
+            String sql = "UPDATE " + TAB_ACCOUNT + " SET " +
+                    COL_USER_NAME + " = ?, " +
+                    COL_PASSWORD + " = ?, " +
+                    COL_GRANTED_AUTHORITIES + " = ?, " +
+                    COL_IS_ACCOUNT_NON_EXPIRED + " = ?, " +
+                    COL_IS_ACCOUNT_NON_LOCKED + " = ?, " +
+                    COL_IS_CREDENTIALS_NON_EXPIRED + " = ?, " +
+                    COL_IS_ENABLED + " = ? " +
+                    "WHERE " + COL_USER_KEY + " = ?";
+            jdbcTemplate.update(sql,
+                    buyer.getUsername(),
+                    buyer.getPassword(),
+                    buyer.getAuthorities().toString(),
+                    buyer.isAccountNonExpired(),
+                    buyer.isAccountNonLocked(),
+                    buyer.isCredentialsNonExpired(),
+                    buyer.isEnabled(),
+                    userKey);
+            return new SignUpInfo(buyer.getUsername(), "Account created");
         } catch (DuplicateKeyException e) {
             throw new UserNameAlreadyExistException("User name already exist");
         }
     }
 
     @Override
-    public SignInInfo signIn(String userName, String password) {
+    public SignInInfo signInUser(String userName, String password) {
         String sql = "SELECT * FROM " + TAB_ACCOUNT + " WHERE " + COL_USER_NAME + " = ?";
         List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, userName);
         if (resultList.size() == 0) throw new UserNameNotFoundException("User name does not exist");
-        String passwordHash = resultList.get(0).getOrDefault(COL_PASSWORD_HASH, "").toString().trim();
+        String passwordHash = resultList.get(0).getOrDefault(COL_PASSWORD, "").toString().trim();
         String hashedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!passwordHash.contentEquals(hashedPassword)) throw new PasswordMismatchException("Incorrect password");
         return new SignInInfo(userName, "Logged in successfully");

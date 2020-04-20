@@ -1,5 +1,6 @@
 package com.vignesh.howzat.dao;
 
+import com.vignesh.howzat.auth.AppUser;
 import com.vignesh.howzat.model.Handshake;
 import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
@@ -10,7 +11,7 @@ public interface AccountDao {
 
     UserKeys generateUserKeys(int noOfTeams);
 
-    SignUpInfo signUp(String userName, String password, String userKey);
+    SignUpInfo signUpUser(AppUser buyer, String userKey);
 
-    SignInInfo signIn(String userName, String password);
+    SignInInfo signInUser(String userName, String password);
 }

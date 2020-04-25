@@ -1,13 +1,11 @@
 package com.vignesh.howzat.dao;
 
 import com.vignesh.howzat.auth.AppUser;
-import com.vignesh.howzat.exception.signin.PasswordMismatchException;
-import com.vignesh.howzat.exception.signin.UserNameNotFoundException;
 import com.vignesh.howzat.exception.signup.DuplicateUserKeyException;
+import com.vignesh.howzat.exception.signup.UserAlreadySignedUpException;
 import com.vignesh.howzat.exception.signup.UserKeyNotFoundException;
 import com.vignesh.howzat.exception.signup.UserNameAlreadyExistException;
 import com.vignesh.howzat.model.Handshake;
-import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +21,12 @@ import java.util.Random;
 @Repository("postgres")
 public class HowzatDataAccessService implements HowzatDao {
 
-    private static final String TAB_ACCOUNT = "account";
     private static final String TAB_USERS = "users";
     private static final String TAB_AUTHORITIES = "authorities";
     private static final String TAB_USER_KEYS = "user_keys";
     private static final String COL_USER_KEY = "u_key";
     private static final String COL_USER_NAME = "username";
-    private static final String COL_PASSWORD = "password";
+    private static final String COL_AUTHORITY = "authority";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -67,15 +64,9 @@ public class HowzatDataAccessService implements HowzatDao {
             throw new DuplicateUserKeyException("User Key already registered");
 
         try {
-            jdbcTemplate.update("INSERT INTO " + TAB_USERS + " VALUES (?, ?, ?)",
-                    user.getUsername(), user.getPassword(), user.isEnabled());
-
+            insertUser(user);
             jdbcTemplate.update("UPDATE " + TAB_USER_KEYS + " SET " + COL_USER_NAME + " = ? WHERE "
                     + COL_USER_KEY + " = ?", user.getUsername(), userKey);
-
-            user.getAuthorities().forEach(authority -> jdbcTemplate.update("INSERT INTO " + TAB_AUTHORITIES + " VALUES(?, ?)",
-                    user.getUsername(), authority.getAuthority()));
-
             return new SignUpInfo(user.getUsername(), "Account created");
         } catch (DuplicateKeyException e) {
             throw new UserNameAlreadyExistException("User name already exist");
@@ -83,13 +74,22 @@ public class HowzatDataAccessService implements HowzatDao {
     }
 
     @Override
-    public SignInInfo signInUser(String userName, String password) {
-        String sql = "SELECT * FROM " + TAB_ACCOUNT + " WHERE " + COL_USER_NAME + " = ?";
-        List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, userName);
-        if (resultList.size() == 0) throw new UserNameNotFoundException("User name does not exist");
-        String passwordHash = resultList.get(0).getOrDefault(COL_PASSWORD, "").toString().trim();
-        String hashedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!passwordHash.contentEquals(hashedPassword)) throw new PasswordMismatchException("Incorrect password");
-        return new SignInInfo(userName, "Logged in successfully");
+    public SignUpInfo signUpAuctioneer(AppUser auctioneer) {
+        List<Map<String, Object>> resultList = jdbcTemplate
+                .queryForList("SELECT * FROM " + TAB_AUTHORITIES + " WHERE " + COL_AUTHORITY + " = 'ROLE_AUCTIONEER'");
+        if (resultList.size() != 0) throw new UserAlreadySignedUpException("Auctioneer already signed up");
+        try {
+            insertUser(auctioneer);
+        } catch (DuplicateKeyException e) {
+            throw new UserNameAlreadyExistException("User name already exist");
+        }
+        return new SignUpInfo(auctioneer.getUsername(), "Account created");
+    }
+
+    private void insertUser(AppUser user) {
+        jdbcTemplate.update("INSERT INTO " + TAB_USERS + " VALUES (?, ?, ?)",
+                user.getUsername(), user.getPassword(), user.isEnabled());
+        user.getAuthorities().forEach(authority -> jdbcTemplate.update("INSERT INTO " + TAB_AUTHORITIES + " VALUES(?, ?)",
+                user.getUsername(), authority.getAuthority()));
     }
 }

@@ -54,4 +54,17 @@ public class UserKeyExceptionHandler {
         );
         return new ResponseEntity<>(exceptionEntity, badRequest);
     }
+
+    @ExceptionHandler(value = {UserAlreadySignedUpException.class})
+    public ResponseEntity<Object> handleUserAlreadySignedUpException(UserAlreadySignedUpException exception, WebRequest request) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        ExceptionEntity exceptionEntity = new ExceptionEntity(
+                exception.getMessage(),
+                badRequest,
+                ZonedDateTime.now(ZoneId.of("Z")),
+                ERR_CODE_USER_NAME_EXISTS
+        );
+        return new ResponseEntity<>(exceptionEntity, badRequest);
+    }
 }

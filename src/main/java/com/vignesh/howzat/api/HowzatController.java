@@ -43,19 +43,18 @@ public class HowzatController {
     @PostMapping(path = "/buyer/signIn")
     public SignInInfo signInUser(@RequestParam("username") String userName,
                                  @RequestParam("password") String password) {
-        return howzatService.signInUser(userName, password);
+        return null;
     }
 
     @PostMapping(path = "/auctioneer/signUp")
     public SignUpInfo signUpAuctioneer(@RequestParam("username") String userName,
-                                       @RequestParam("password") String password,
-                                       @RequestParam("user_key") String userKey) {
-        return howzatService.signUpAuctioneer(userName, password, userKey);
+                                       @RequestParam("password") String password) {
+        return howzatService.signUpAuctioneer(userName, password);
     }
 
     @PostMapping(path = "/auctioneer/signIn")
     public SignInInfo signInAuctioneer(@RequestParam("username") String userName,
                                        @RequestParam("password") String password) {
-        return howzatService.signInUser(userName, password);
+        return null;
     }
 }

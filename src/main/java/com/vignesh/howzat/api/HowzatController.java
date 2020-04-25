@@ -1,12 +1,10 @@
 package com.vignesh.howzat.api;
 
 import com.vignesh.howzat.model.Handshake;
-import com.vignesh.howzat.model.SignInInfo;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import com.vignesh.howzat.service.HowzatService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
@@ -21,8 +19,7 @@ public class HowzatController {
         this.howzatService = howzatService;
     }
 
-    @GetMapping(path = "hello")
-    @PreAuthorize("hasAuthorities('ROLE_BUYER')")
+    @GetMapping(path = "/buyer/hello")
     public Handshake sayHello() {
         long timeInMillis = Calendar.getInstance().getTimeInMillis();
         return howzatService.sayHello(timeInMillis, "connection established");
@@ -40,21 +37,9 @@ public class HowzatController {
         return howzatService.signUpBuyer(userName, password, userKey);
     }
 
-    @PostMapping(path = "/buyer/signIn")
-    public SignInInfo signInUser(@RequestParam("username") String userName,
-                                 @RequestParam("password") String password) {
-        return null;
-    }
-
     @PostMapping(path = "/auctioneer/signUp")
     public SignUpInfo signUpAuctioneer(@RequestParam("username") String userName,
                                        @RequestParam("password") String password) {
         return howzatService.signUpAuctioneer(userName, password);
-    }
-
-    @PostMapping(path = "/auctioneer/signIn")
-    public SignInInfo signInAuctioneer(@RequestParam("username") String userName,
-                                       @RequestParam("password") String password) {
-        return null;
     }
 }

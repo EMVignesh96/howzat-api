@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import static com.vignesh.howzat.security.UserPermission.*;
 
 public enum UserRole {
-    VIEWER(Sets.newHashSet()),
     BUYER(Sets.newHashSet(AUCTION_READ, PLAYER_READ, PLAYER_UPDATE, TEAM_READ, TEAM_WRITE, DASHBOARD_READ)),
     AUCTIONEER(Sets.newHashSet(AUCTION_WRITE, PLAYER_READ, DASHBOARD_READ));
 

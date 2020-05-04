@@ -3,6 +3,7 @@ package com.vignesh.howzat.service;
 import com.vignesh.howzat.auth.AppUser;
 import com.vignesh.howzat.dao.HowzatDao;
 import com.vignesh.howzat.model.Handshake;
+import com.vignesh.howzat.model.Player;
 import com.vignesh.howzat.model.SignUpInfo;
 import com.vignesh.howzat.model.UserKeys;
 import com.vignesh.howzat.security.PasswordConfig;
@@ -53,5 +54,9 @@ public class HowzatService {
                 true,
                 true);
         return howzatDao.signUpAuctioneer(auctioneer);
+    }
+
+    public Player getCurrentPlayer() {
+        return howzatDao.getCurrentPlayer();
     }
 }

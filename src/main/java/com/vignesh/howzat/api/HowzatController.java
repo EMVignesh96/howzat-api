@@ -1,8 +1,6 @@
 package com.vignesh.howzat.api;
 
-import com.vignesh.howzat.model.Handshake;
-import com.vignesh.howzat.model.SignUpInfo;
-import com.vignesh.howzat.model.UserKeys;
+import com.vignesh.howzat.model.*;
 import com.vignesh.howzat.service.HowzatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +39,11 @@ public class HowzatController {
     public SignUpInfo signUpAuctioneer(@RequestParam("username") String userName,
                                        @RequestParam("password") String password) {
         return howzatService.signUpAuctioneer(userName, password);
+    }
+
+    @GetMapping(path = "/currentPlayer")
+    public CurrentPlayerDto getCurrentPlayer() {
+        Player currentPlayer = howzatService.getCurrentPlayer();
+        return new CurrentPlayerDto(currentPlayer);
     }
 }

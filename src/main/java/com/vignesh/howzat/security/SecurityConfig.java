@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new UserNamePasswordAuthFilter(authenticationManager(), jwtConfig, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(secretKey), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/api/v1/buyer/signUp", "/api/v1/auctioneer/signUp", "/").permitAll()
+                .antMatchers("/api/v1/buyer/signUp", "/api/v1/auctioneer/signUp", "/api/v1/currentPlayer", "/").permitAll()
                 .antMatchers("/api/v1/buyer/**").hasRole(BUYER.name())
                 .antMatchers("/api/v1/auctioneer/**").hasRole(AUCTIONEER.name())
                 .anyRequest()
